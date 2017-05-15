@@ -39,18 +39,30 @@ class Home extends CI_Controller {
 
 	public function list_tagihan()
 	{
-			$crud = new grocery_CRUD();
+		$crud = new grocery_CRUD();
 
-			$crud->set_theme('datatables');
-			$crud->set_table('tagihan'); 
-			$crud->set_subject('Tagihan');
-			$crud->required_fields('lastName');
-			$crud->callback_column('ammount',array($this,'valueToIdr'));
-			$crud->set_field_upload('file_url','assets/uploads/files');
+		$crud->set_theme('datatables');
+		$crud->set_table('tagihan'); 
+		$crud->set_subject('Tagihan');
+		$crud->required_fields('lastName');
+		$crud->callback_column('ammount',array($this,'valueToIdr'));
+		$crud->set_field_upload('file_url','assets/uploads/files');
 
-			$output = $crud->render();
+		$output = $crud->render();
 
-			$this->_example_output($output);
+		$this->_example_output($output);
+	}
+	public function list_rekening()
+	{
+		$crud = new grocery_CRUD();
+
+		$crud->set_theme('datatables');
+		$crud->set_table('rekening'); 
+		$crud->set_subject('rekening');
+		$crud->required_fields('kode_rek','norek');  
+		$output = $crud->render();
+
+		$this->_example_output($output);
 	}
 	public function valueToIdr($value='')
 	{
@@ -80,5 +92,64 @@ class Home extends CI_Controller {
 			return $output;
 		}
 	}
- 
+	public function import_tagihan($output = null)
+	{
+		
+		$data = array('base_url' => base_url() );
+		$this->load->view('upload_tag.php',$data); 
+
+	}
+	public function upload(){
+		$this->load->library(array('PHPExcel','PHPExcel/IOFactory'));
+		$fileName = $this->input->post('file', TRUE);
+		$config['upload_path'] = './uploads/'; 
+		$config['file_name'] = $fileName;
+		$config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
+		$config['max_size'] = 10000;
+
+		$this->load->library('upload', $config);
+		$this->upload->initialize($config); 
+
+		if (!$this->upload->do_upload('file')) {
+			$error = array('error' => $this->upload->display_errors());
+			$this->session->set_flashdata('msg','Ada kesalah dalam upload'); 
+			redirect('Welcome'); 
+		} else {
+			$media = $this->upload->data();
+			$inputFileName = 'uploads/'.$media['file_name'];
+
+			try { 
+				$inputFileType = IOFactory::identify($inputFileName);
+				$objReader = IOFactory::createReader($inputFileType);
+				$objPHPExcel = $objReader->load($inputFileName);
+			} catch(Exception $e) {
+				die('Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
+			}
+
+			$sheet = $objPHPExcel->getSheet(0);
+			$highestRow = $sheet->getHighestRow();
+			$highestColumn = $sheet->getHighestColumn();
+
+			for ($row = 2; $row <= $highestRow; $row++){  
+				$rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,
+					NULL,
+					TRUE,
+					FALSE);
+				$data = array(
+					"npm"=> $rowData[0][1],
+					"nama"=> $rowData[0][2],
+					"ammount"=> $rowData[0][3],
+					"keterangan"=> $rowData[0][4],
+					"kode_rekening"=> $rowData[0][5],
+					"status"=>$rowData[0][6],
+					); 
+    //$this->db->insert("tbimport",$data);
+				$this->db->insert('tagihan', $data); 
+
+			} 
+			$this->session->set_flashdata('msg','Berhasil upload ...!!'); 
+			redirect('home/list_tagihan');
+		}  
+	}
+
 }

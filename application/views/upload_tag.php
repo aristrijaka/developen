@@ -275,50 +275,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				<!-- //header-ends -->
 				<div class="outter-wp">
 					<!--custom-widgets-->
-					<div class="custom-widgets">
-						<div class="row-one">
-							<div class="col-md-3 widget">
-								<div class="stats-left ">
-									<h5>Jumlah</h5>
-									<h4> Tagihan</h4>
-								</div>
-								<div class="stats-right">
-									<label><?php echo $jumtag; ?></label>
-								</div>
-								<div class="clearfix"> </div>	
-							</div>
-							<div class="col-md-3 widget states-mdl">
-								<div class="stats-left">
-									<h5>Jumlah</h5>
-									<h4>Bayar</h4>
-								</div>
-								<div class="stats-right">
-									<label> <?php echo $jumbay; ?></label>
-								</div>
-								<div class="clearfix"> </div>	
-							</div>
-							<div class="col-md-3 widget states-thrd">
-								<div class="stats-left">
-									<h5>Jumlah</h5>
-									<h4>Blm Bayar</h4>
-								</div>
-								<div class="stats-right">
-									<label><?php echo $jumbbay; ?></label>
-								</div>
-								<div class="clearfix"> </div>	
-							</div>
-							<div class="col-md-3 widget states-last">
-								<div class="stats-left">
-									<h5>Today</h5>
-									<h4>Alerts</h4>
-								</div>
-								<div class="stats-right">
-									<label>30</label>
-								</div>
-								<div class="clearfix"> </div>	
-							</div>
-							<div class="clearfix"> </div>	
-						</div>
+					<div class="custom-widgets"> 
 					</div>
 					<!--//custom-widgets-->
 					<!--/candile-->
@@ -327,14 +284,16 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 					<div class="charts">
 
 <?php echo $this->session->flashdata('msg'); ?> 
-						<?php 
-						foreach($css_files as $file): ?>
-						<link type="text/css" rel="stylesheet" href="<?php echo $file; ?>" />
-					<?php endforeach; ?>
-					<?php foreach($js_files as $file): ?>
-						<script src="<?php echo $file; ?>"></script>
-					<?php endforeach; ?>
-					<?php echo $output; ?> 
+<h2 class="inner-tittle">Upload Tagihan </h2>
+<div class="graph-form">
+	<div class="form-body">
+		<form action="<?php echo base_url();?>index.php/home/upload/" enctype="multipart/form-data" method="post">
+		<input name="file" type="file" />
+		<input type="submit" value="Import File" />
+		</form>
+		</div>
+
+	</div>
 
 					<!--//bottom-grids-->
 					<!--/charts-inner-->
