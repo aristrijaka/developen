@@ -119,6 +119,7 @@ class Examples extends CI_Controller {
 	{
 		return $value.' &euro;';
 	}
+	
 
 	public function film_management()
 	{

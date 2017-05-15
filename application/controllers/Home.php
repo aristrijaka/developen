@@ -45,13 +45,17 @@ class Home extends CI_Controller {
 			$crud->set_table('tagihan'); 
 			$crud->set_subject('Tagihan');
 			$crud->required_fields('lastName');
+			$crud->callback_column('ammount',array($this,'valueToIdr'));
 			$crud->set_field_upload('file_url','assets/uploads/files');
 
 			$output = $crud->render();
 
 			$this->_example_output($output);
 	}
-
+	public function valueToIdr($value='')
+	{
+		return ttk($value);
+	}
 	public function employees_management2()
 	{
 		$crud = new grocery_CRUD();
